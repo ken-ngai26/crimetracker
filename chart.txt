@@ -1,0 +1,169 @@
+ 
+<html>
+<head>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name = "viewport" content = "width = 320, initial-scale = 1.0, user-scalable = no">
+<style>
+body 
+{
+
+background-image:url('background.jpg');
+
+}
+#draw
+{
+position: absolute;
+left : 250px;
+}
+#chart_div
+{
+position: absolute;
+top : 110px;
+}
+#table_div
+{
+position: absolute;
+top : 360px;
+}
+</style>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script type="text/javascript">  
+	 // Load the Visualization API and the piechart package.
+    google.load('visualization', '1', {'packages':['corechart','table']});
+      
+
+
+	$( document ).ready(function() {
+	$("#draw").click(function( event ) {
+			var startDate = document.getElementById('startDate').value; 
+			var endDate = document.getElementById('endDate').value; 
+			var reportType = document.getElementById('reportType').value;
+			//var diff = monthDiff(new Date(Date.parse(startDate.replace(/-/g, " "))),new Date(Date.parse(endDate.replace(/-/g, " "))));
+			//alert('Start Date ' + diff);
+			document.getElementById('chart_div').style.visibility='visible'
+			
+			getReport(startDate, endDate, reportType);
+
+		});
+		
+	});	
+    
+    function monthDiff(d1, d2) {
+    var months;
+    months = (d2.getFullYear() - d1.getFullYear()) * 12;
+    months -= d1.getMonth() + 1;
+    months += d2.getMonth();
+    return months <= 0 ? 0 : months;
+	}
+	
+	function getReport(startDate, endDate, reportType) {
+	var url = './getAllReport.php';
+	var parameter = { startDate: startDate, endDate: endDate, reportType: reportType };
+	var jsonData = $.ajax({
+		url: url,
+		data: parameter,
+		dataType:'json',
+		async: false
+		}).responseText;
+	 var diff = monthDiff(new Date(Date.parse(startDate.replace(/-/g, " "))),new Date(Date.parse(endDate.replace(/-/g, " "))));
+
+	 // Create our data table out of JSON data loaded from server.
+      var data = new google.visualization.DataTable(jsonData);
+	  var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+      chart.draw(data, {width: 310, height: 240, legend : 'top' ,title: 'Report Number vs Time',  hAxis: {title: 'Year-Month'}});
+	  var table = new google.visualization.Table(document.getElementById('table_div'));
+	  table.draw(data, {showRowNumber: true, alternatingRowStyle: true});
+      // Instantiate and draw our chart, passing in some options.
+	if (diff<=6)
+	{
+		var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, {width: 310, height: 240, title: 'Report Number vs Time',  hAxis: {title: 'Year-Month'}});
+	    var table = new google.visualization.Table(document.getElementById('table_div'));
+	    table.draw(data, {showRowNumber: true, alternatingRowStyle: true});
+	} else
+	if ((diff>6) && (diff<=12))
+	{
+		var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, {width: 510, height: 240, title: 'Report Number vs Time',  hAxis: {title: 'Year-Month'}});
+	    var table = new google.visualization.Table(document.getElementById('table_div'));
+	    table.draw(data, {showRowNumber: true, alternatingRowStyle: true});
+	} else
+	if ((diff>12) && (diff<=36))
+	{
+		var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, {width: 1000, height: 240, title: 'Report Number vs Time',  hAxis: {title: 'Year-Month'}});
+	    var table = new google.visualization.Table(document.getElementById('table_div'));
+	    table.draw(data, {showRowNumber: true, alternatingRowStyle: true});
+	} else
+    if ((diff>36) && (diff<=100))
+	{
+		var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, {width: 2000, height: 240, title: 'Report Number vs Time',  hAxis: {title: 'Year-Month'}});
+	    var table = new google.visualization.Table(document.getElementById('table_div'));
+	    table.draw(data, {showRowNumber: true, alternatingRowStyle: true});
+	}   
+	}
+	
+
+    </script>
+	<script language=javascript type='text/javascript'> 
+	$(function(){
+		$("#chart_div").hide();
+                $("#myContent").hide();
+		//$("#table_div").hide();
+		$("#draw").on("click", function(){
+			$("#chart_div").show();
+		//	$("#table_div").show();
+		});
+	});
+	</script>
+	<script>
+		var ld=(document.all);
+        var ns4=document.layers;
+        var ns6=document.getElementById&&!document.all;
+        var ie4=document.all;
+        if (ns4)
+        ld=document.loading;
+        else 
+        function init()
+        {
+        if(ns4){ld.visibility="hidden";}
+        else if (ns6||ie4) ld.display="none";
+        }
+</script>
+
+<script type="text/javascript">
+function toggleDiv(divId) {
+   $("#"+divId).toggle();
+}
+</script>
+</head>
+
+<body>
+<a href="javascript:toggleDiv('myContent');">Help</a>
+<div id="myContent" style="padding: 5px 10px;">
+Choose a Start Date, End Date, and Report type <br/>
+you want to view the statistic on then click on <br/>
+the search.<br/>
+</div>
+<div>
+			Start Date: <input type="date" value="2013-01-01" id="startDate" /> <br/>
+			End Date: <input type="date"  value="2013-03-30" id="endDate"/> <br/>
+			Report Type: <select id="reportType"> 
+				  <option value="1" selected>123456789</option> 
+				  <option value="2">123456789</option> 
+				  <option value="3">123456789</option>
+				  <option value="4">123456789</option> 				  
+				</select> 
+			<input type="button" value="Search" id="draw">
+			
+</div>
+
+<div id="chart_div" onload="javascript:hideDiv()"></div>
+<div id="table_div"></div>
+</body>
+</html>
+
+ 
